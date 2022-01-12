@@ -1,0 +1,15 @@
+[Unit]
+Description=Relay sensor data to aws
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u http_listener_aws.py
+WorkingDirectory=/home/pi/Source/projects/sensor_alerts
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

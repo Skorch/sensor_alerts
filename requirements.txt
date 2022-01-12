@@ -1,0 +1,4 @@
+paho-mqtt
+awsiotsdk
+aiohttp
+meteocalc
