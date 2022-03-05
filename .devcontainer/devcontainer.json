@@ -1,0 +1,17 @@
+{
+  "name": "Remote container for terraform",
+  "build": { 
+    "dockerfile": "Dockerfile", 
+    "context": "..", 
+     //Update 'VARIANT' to pick a DBT version
+    "args": {
+    } 
+  },
+  "remoteEnv": {
+    "DBT_PROFILES_DIR": "./"
+  },  
+
+  "extensions": ["eamodio.gitlens", "hashicorp.terraform"],
+  "mounts": [
+  ]
+}
