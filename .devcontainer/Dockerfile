@@ -1,5 +1,6 @@
 FROM python:3
 
+
 COPY requirements.txt /tmp/pip-tmp/
 
 # RUN apt-get update \
@@ -17,3 +18,5 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requ
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
 RUN apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 RUN apt-get update && apt-get install terraform
+
+RUN pip install awscli

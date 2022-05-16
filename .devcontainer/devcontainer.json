@@ -7,6 +7,9 @@
     "args": {
     } 
   },
+  "runArgs": [
+    "--env-file", ".env"
+  ],
   "remoteEnv": {
     "DBT_PROFILES_DIR": "./"
   },  
