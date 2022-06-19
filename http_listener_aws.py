@@ -61,7 +61,7 @@ async def test(payload_path):
     data = data_processor.generate_data()
 
     passkey = payload.get("PASSKEY")
-    # await iot_processor.process_data(data, passkey)
+    await iot_processor.process_data(data, passkey)
     await mqtt_processor.process_data(data, passkey)
 
 

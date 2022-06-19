@@ -112,6 +112,7 @@ async def process_data(data, passkey):
     # sensor_message_data_list += environment_sensor
 
     for message_data in sensor_message_data_list:
+        logger.info(f"sending mqtt topic {MQTT_TOPIC} message {message_data}")
         send_message(mqtt_connection, MQTT_TOPIC, message_data)
 
 
