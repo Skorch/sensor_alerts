@@ -23,7 +23,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO if not DEBUG else logging.DEBUG)
 
-mqtt_connection = None
 
 # TODO:  understand this
 io.init_logging(getattr(io.LogLevel, io.LogLevel.Info.name), 'stderr')
@@ -43,12 +42,14 @@ async def send_message(mqtt_target, mqtt_topic, values):
     logger.debug(f"sending sensor reading '{values}'...")
 
     message = {"message" : values}
-    await asyncio.wrap_future(mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE))
-
+    # await asyncio.wrap_future(mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE))
+    publish_future =  mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE)
+    result = publish_future[0].result()
+    logger.debug(f"{result}")
     logger.debug("Update request published.")
 
 
-async def process_data(data, passkey):
+async def process_data(mqtt_connection, data, passkey):
 
 
     # Data comes in the form:
@@ -113,32 +114,5 @@ async def process_data(data, passkey):
 
     for message_data in sensor_message_data_list:
         logger.info(f"sending mqtt topic {MQTT_TOPIC} message {message_data}")
-        send_message(mqtt_connection, MQTT_TOPIC, message_data)
+        await send_message(mqtt_connection, MQTT_TOPIC, message_data)
 
-
-def setup_connection():
-    global mqtt_connection
-    
-    # Spin up resources
-    event_loop_group = io.EventLoopGroup(1)
-    host_resolver = io.DefaultHostResolver(event_loop_group)
-    client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
-    mqtt_connection = mqtt_connection_builder.mtls_from_path(
-            endpoint=MQTT_HOST,
-            cert_filepath=AWS_CERT_PATH,
-            pri_key_filepath=AWS_KEY_PATH,
-            client_bootstrap=client_bootstrap,
-            ca_filepath=AWS_ROOT_CA,
-            on_connection_interrupted=on_connection_interrupted,
-            on_connection_resumed=on_connection_resumed,
-            client_id=AWS_CLIENT_ID,
-            clean_session=False,
-            keep_alive_secs=6)
-
-    logger.info(f"Connecting to {MQTT_HOST} with client ID '{AWS_CLIENT_ID}'...")
-
-    connect_future = mqtt_connection.connect()
-
-    # Future.result() waits until a result is available
-    res = connect_future.result()
-    logger.info(f"Connected with result {res}")

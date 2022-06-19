@@ -38,7 +38,7 @@ def on_connection_resumed(connection, return_code, session_present, **kwargs):
     logger.info(f"Connection resumed. return_code: {return_code} session_present: {session_present}")
 
 
-async def change_shadow_value(thing_name, values):
+async def change_shadow_value(mqtt_connection, thing_name, values):
 
     print("Updating reported shadow value to '{}'...".format(values))
     request = iotshadow.UpdateShadowRequest(
@@ -54,7 +54,7 @@ async def change_shadow_value(thing_name, values):
     logger.info("Update request published.")
 
 
-async def process_data(data, passkey):
+async def process_data(mqtt_connection, data, passkey):
 
     thing_name = f'SensorHub_{passkey}'
     
@@ -75,38 +75,12 @@ async def process_data(data, passkey):
     shadow_update["soil_sensors"] = soil_sensors
     shadow_update["soil_sensors_array"] = list(( flatten_soil(sensor) for sensor in soil_sensors ))
 
-    await change_shadow_value(thing_name, shadow_update)
+    await change_shadow_value(mqtt_connection, thing_name, shadow_update)
 
     for sensor in soil_sensors:
         soil_update = soil_sensors[sensor]
         soil_thing = f"{thing_name}_{sensor}"
-        await change_shadow_value(soil_thing, soil_update)
+        await change_shadow_value(mqtt_connection, soil_thing, soil_update)
 
 
-async def setup_connection():
-    global mqtt_connection
-    
-    # Spin up resources
-    event_loop_group = io.EventLoopGroup(1)
-    host_resolver = io.DefaultHostResolver(event_loop_group)
-    client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
-    mqtt_connection = mqtt_connection_builder.mtls_from_path(
-            endpoint=MQTT_HOST,
-            cert_filepath=AWS_CERT_PATH,
-            pri_key_filepath=AWS_KEY_PATH,
-            client_bootstrap=client_bootstrap,
-            ca_filepath=AWS_ROOT_CA,
-            on_connection_interrupted=on_connection_interrupted,
-            on_connection_resumed=on_connection_resumed,
-            client_id=AWS_CLIENT_ID,
-            clean_session=False,
-            keep_alive_secs=6)
-
-    logger.info(f"Connecting to {MQTT_HOST} with client ID '{AWS_CLIENT_ID}'...")
-
-    connect_future = mqtt_connection.connect()
-
-    # Future.result() waits until a result is available
-    connect_future.result()
-    logger.info("Connected!")
 
