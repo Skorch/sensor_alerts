@@ -38,11 +38,11 @@ async def async_publish_payload(request: web.Request):
     payload = dict(await request.post())
 
     logger.debug("Received data from Ecowitt device: %s", payload)
+    passkey = payload["PASSKEY"]
 
     data_processor = DataProcessor(payload, UNIT_SYSTEM)
     data = data_processor.generate_data()
 
-    passkey = payload["PASSKEY"]
     logger.debug(f"passkey: {passkey}")
 
     await iot_processor.process_data(mqtt_connection, data, passkey)
@@ -56,21 +56,21 @@ def main():
 
     web.run_app(app, port=AIOHTTP_PORT)
 
-async def test(payload_path):
+# async def test(payload_path):
 
 
-    payload_file = open(payload_path)
-    payload = json.load(payload_file)
+#     payload_file = open(payload_path)
+#     payload = json.load(payload_file)
 
-    logger.debug("Received data from Ecowitt device: %s", payload)
+#     logger.debug("Received data from Ecowitt device: %s", payload)
 
-    data_processor = DataProcessor(payload, UNIT_SYSTEM)
-    data = data_processor.generate_data()
+#     data_processor = DataProcessor(payload, UNIT_SYSTEM)
+#     data = data_processor.generate_data()
 
-    passkey = payload["PASSKEY"]
-    logger.debug(f"passkey: {passkey}")
-    await iot_processor.process_data(mqtt_connection, data, passkey)
-    await mqtt_processor.process_data(mqtt_connection, data, passkey)
+#     passkey = payload["PASSKEY"]
+#     logger.debug(f"passkey: {passkey}")
+#     await iot_processor.process_data(mqtt_connection, data, passkey)
+#     await mqtt_processor.process_data(mqtt_connection, data, passkey)
 
 
     
