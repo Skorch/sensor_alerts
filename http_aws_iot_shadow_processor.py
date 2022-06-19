@@ -22,6 +22,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO if not DEBUG else logging.DEBUG)
 
+mqtt_connection = None
 
 # TODO:  understand this
 io.init_logging(getattr(io.LogLevel, io.LogLevel.Info.name), 'stderr')

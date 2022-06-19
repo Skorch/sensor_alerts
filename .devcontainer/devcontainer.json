@@ -15,6 +15,5 @@
   },  
 
   "extensions": ["eamodio.gitlens", "hashicorp.terraform"],
-  "mounts": [
-  ]
+  "mounts": ["source=${localWorkspaceFolder}/../aws_iot,target=${containerWorkspaceFolder}/../aws_iot,type=bind,consistency=cached"]
 }

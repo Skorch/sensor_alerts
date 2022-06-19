@@ -21,9 +21,9 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO if not DEBUG else logging.DEBUG)
 
-async def setup():
-    await iot_processor.setup_connection()
-    await mqtt_processor.setup_connection()
+def setup():
+    # await iot_processor.setup_connection()
+    mqtt_processor.setup_connection()
 
 async def async_publish_payload(request: web.Request):
 
@@ -37,11 +37,11 @@ async def async_publish_payload(request: web.Request):
 
     passkey = payload.get("PASSKEY")
     await iot_processor.process_data(data, passkey)
-    # await mqtt_processor.process_data(data, passkey)
+    await mqtt_processor.process_data(data, passkey)
 
 
-async def main():
-    await setup()
+def main():
+    setup()
 
     app = web.Application()
     app.add_routes([web.post(AIOHTTP_ENDPOINT, async_publish_payload)])
@@ -62,13 +62,15 @@ async def test(payload_path):
 
     passkey = payload.get("PASSKEY")
     # await iot_processor.process_data(data, passkey)
-    # await mqtt_processor.process_data(data, passkey)
+    await mqtt_processor.process_data(data, passkey)
 
 
     
 
 if __name__ == '__main__':
 
-    # main()
-    asyncio.run(test("./sample_events/basic.txt"))
+    main()
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(test("./sample_events/basic.txt"))
+    # asyncio.run(test("./sample_events/basic.txt"))
     

@@ -10,6 +10,7 @@ import re
 import logging
 import threading
 import asyncio
+from datetime import datetime
 
 from config_mqtt import *
 
@@ -69,7 +70,7 @@ async def process_data(data, passkey):
     #     'model': 'GW1000_Pro'
     # }    
     # pivot this into a series of 'soilX' messages, and then everything else as part of an envionrmnetal sensor
-    sensor_ts = data["dateutc"]
+    sensor_ts = datetime.now().isoformat()
     soil_sensors = {}
 
     environment_sensor = {
@@ -111,10 +112,10 @@ async def process_data(data, passkey):
     # sensor_message_data_list += environment_sensor
 
     for message_data in sensor_message_data_list:
-        await send_message(mqtt_connection, MQTT_TOPIC, message_data)
+        send_message(mqtt_connection, MQTT_TOPIC, message_data)
 
 
-async def setup_connection():
+def setup_connection():
     global mqtt_connection
     
     # Spin up resources
@@ -138,5 +139,5 @@ async def setup_connection():
     connect_future = mqtt_connection.connect()
 
     # Future.result() waits until a result is available
-    connect_future.result()
-    logger.info("Connected!")
+    res = connect_future.result()
+    logger.info(f"Connected with result {res}")
