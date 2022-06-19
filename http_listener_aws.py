@@ -22,7 +22,7 @@ logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO if not DEBUG else logging.DEBUG)
 
 def setup():
-    # await iot_processor.setup_connection()
+    iot_processor.setup_connection()
     mqtt_processor.setup_connection()
 
 async def async_publish_payload(request: web.Request):
@@ -49,7 +49,7 @@ def main():
     web.run_app(app, port=AIOHTTP_PORT)
 
 async def test(payload_path):
-    await setup()
+    setup()
 
 
     payload_file = io.open(payload_path)
