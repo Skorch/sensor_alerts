@@ -1,0 +1,19 @@
+{
+    "PASSKEY": "4541DDAA20550D40566163953AA78D9C",
+    "stationtype": "GW1000B_V1.6.8",
+    "dateutc": "2022-06-19 00:42:32",
+    "tempinf": "72.5",
+    "humidityin": "52",
+    "baromrelin": "29.692",
+    "baromabsin": "29.692",
+    "soilmoisture1": "47",
+    "soilmoisture2": "73",
+    "soilmoisture3": "10",
+    "soilmoisture4": "52",
+    "soilbatt1": "1.3",
+    "soilbatt2": "1.4",
+    "soilbatt3": "1.3",
+    "soilbatt4": "1.4",
+    "freq": "915M",
+    "model": "GW1000_Pro"
+}
