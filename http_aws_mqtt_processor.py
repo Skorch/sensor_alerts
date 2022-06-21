@@ -62,8 +62,7 @@ def map_soil_sensor(key, data):
 
 
 def event_template(sensor_type, sensor_id, system_id, sensor_ts, metric_name, metric_value): 
-    return 
-    {
+    return {
         "sensor_id": sensor_id,
         "sensor_type": sensor_type, 
         "system_id": system_id,
