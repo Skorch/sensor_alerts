@@ -48,6 +48,29 @@ async def send_message(mqtt_target, mqtt_topic, values):
     logger.debug(f"{result}")
     logger.debug("Update request published.")
 
+def map_soil_sensor(key, data):
+    match = re.match('^soil(?P<metric>[A-Za-z]+)(?P<sensor_number>\d+)$', key)
+    sensor_number = f"soil{match.group('sensor_number')}"
+    sensor = soil_sensors.get(sensor_number, {})
+    sensor[match.group('metric')] = data[key]
+    sensor["ts"] = sensor_ts
+    sensor["type"] = "soil_moisture"
+    sensor["system_id"] = f"soil_{passkey}"
+
+    yield sensor_event
+    yield battery_event
+
+
+def event_template(sensor_type, sensor_id, system_id, sensor_ts, metric_name, metric_value): 
+    return 
+    {
+        "sensor_id": sensor_id,
+        "sensor_type": sensor_type, 
+        "system_id": system_id,
+        "metric_name": metric_name,
+        "metric_value": metric_value,
+        "timestamp": sensor_ts
+    }
 
 async def process_data(mqtt_connection, data, passkey):
 
@@ -78,41 +101,37 @@ async def process_data(mqtt_connection, data, passkey):
         "ts": sensor_ts
     }
 
+    system_id = f"soil_{passkey}"
+
     for key in data:
         if 'soil' in key:
             match = re.match('^soil(?P<metric>[A-Za-z]+)(?P<sensor_number>\d+)$', key)
             sensor_number = f"soil{match.group('sensor_number')}"
-            sensor = soil_sensors.get(sensor_number, {})
-            sensor[match.group('metric')] = data[key]
-            sensor["ts"] = sensor_ts
-            sensor["type"] = "soil_moisture"
-            sensor["system_id"] = f"soil_{passkey}"
-            soil_sensors[sensor_number] = sensor
+            metric_name = match.group('metric')
+            metric_value = data[key]
+            sensor_id = sensor_number
+            soil_sensors.append(event_template("soil_moisture", sensor_id, system_id, sensor_ts, metric_name, metric_value))
 
         if key in ['tempinf', 'humidityin', 'baromrelin', 'baromabsin']:
             # look for certain sensor readings
-            
-            environment_sensor[key] = data[key]
+
+            metric_name = key
+            metric_value = data[key]
+            sensor_id = f"hub_{passkey}"
+            soil_sensors.append(event_template("soil_moisture", sensor_id, system_id, sensor_ts, metric_name, metric_value))
 
 
-    flatten_soil = lambda x: {**soil_sensors[x], **{"id": x} }
-    
-    
     # output:
     # {
     #     "system_id", "soil_PASSKEY",
-    #     "id": "soil1",
-    #     "moisture": "1",
-    #     "batt": "1",
-    #     "ts": "timestamp",
-    #     "type": "soil_moisture"
+    #     "sensor_id": "soil1",
+    #     "measure_name": "humid",
+    #     "measure_value": "1",
+    #     "timestamp": "timestamp",
+    #     "sensor_type": "soil_moisture"
     # }
 
-    sensor_message_data_list = list(( flatten_soil(sensor) for sensor in soil_sensors ))
-# TODO: environment sensor either goes on a different topic or need to include sensor type
-    # sensor_message_data_list += environment_sensor
-
-    for message_data in sensor_message_data_list:
+    for message_data in soil_sensors:
         logger.info(f"sending mqtt topic {MQTT_TOPIC} message {message_data}")
         await send_message(mqtt_connection, MQTT_TOPIC, message_data)
 
