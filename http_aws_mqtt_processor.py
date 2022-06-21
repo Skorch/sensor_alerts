@@ -95,7 +95,7 @@ async def process_data(mqtt_connection, data, passkey):
     # }    
     # pivot this into a series of 'soilX' messages, and then everything else as part of an envionrmnetal sensor
     sensor_ts = datetime.now().isoformat()
-    soil_sensors = {}
+    soil_sensors = []
 
     environment_sensor = {
         "ts": sensor_ts
