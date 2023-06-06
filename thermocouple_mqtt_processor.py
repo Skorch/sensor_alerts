@@ -59,7 +59,7 @@ def event_template(sensor_type, sensor_id, system_id, sensor_ts, metric_name, me
 
 def process_data(data):
 
-    create_message = lambda channel, value: event_template(SENSOR_TYPE, f"{SENSOR_TYPE}_{channel}", SYSTEM_ID, datetime.now().isoformat(' '), "temperature", value)
+    create_message = lambda channel, value: event_template(SENSOR_TYPE, f"{SENSOR_TYPE}_{channel}", SYSTEM_ID, datetime.utcnow().isoformat(' '), "temperature", value)
     messages = [create_message(channel, value) for channel, value in data]
 
     for message_data in messages:

@@ -93,7 +93,7 @@ async def process_data(mqtt_connection, data, passkey):
     #     'model': 'GW1000_Pro'
     # }    
     # pivot this into a series of 'soilX' messages, and then everything else as part of an envionrmnetal sensor
-    sensor_ts = datetime.now().isoformat(' ')
+    sensor_ts = datetime.utcnow().isoformat(' ')
     soil_sensors = []
 
     environment_sensor = {

@@ -15,6 +15,6 @@ MQTT_QOS=0
 DEBUG=True # Change to True to log all MQTT messages
 
 AIOHTTP_ENDPOINT = "/data/report"
-AIOHTTP_PORT = 8080
+AIOHTTP_PORT = 8088
 UNIT_SYSTEM = 'metric'
 # End config section
