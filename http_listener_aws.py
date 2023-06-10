@@ -45,7 +45,7 @@ async def async_publish_payload(request: web.Request):
 
     logger.debug(f"passkey: {passkey}")
 
-    await iot_processor.process_data(mqtt_connection, data, passkey)
+    # await iot_processor.process_data(mqtt_connection, data, passkey)
     await mqtt_processor.process_data(mqtt_connection, data, passkey)
 
 
