@@ -26,7 +26,7 @@ logger.setLevel(logging.INFO if not DEBUG else logging.DEBUG)
 # Constants
 CURSOR_BACK_2 = '\x1b[2D'
 ERASE_TO_END_OF_LINE = '\x1b[0K'
-tc_type = TcTypes.TYPE_J   # change this to the desired thermocouple type
+tc_type = TcTypes.TYPE_K   # change this to the desired thermocouple type
 
 def get_temps():
     channels = (0, 1, 2, 3)
