@@ -74,6 +74,8 @@ def event_template(sensor_type, sensor_id, system_id, sensor_ts, metric_name, me
 async def process_data(mqtt_connection, data, passkey):
 
 
+    logger.info(f"received data {data}")
+
     # Data comes in the form:
     # {
     #     'PASSKEY': '<UUID>', 
@@ -93,12 +95,11 @@ async def process_data(mqtt_connection, data, passkey):
     #     'model': 'GW1000_Pro'
     # }    
     # pivot this into a series of 'soilX' messages, and then everything else as part of an envionrmnetal sensor
-    sensor_ts = datetime.utcnow().isoformat(' ')
-    soil_sensors = []
 
-    environment_sensor = {
-        "ts": sensor_ts
-    }
+    sensor_ts = data["dateutc"]
+    # sensor_ts = datetime.utcnow().isoformat(' ')
+
+    soil_sensors = []
 
     system_id = f"soil_{passkey}"
 
