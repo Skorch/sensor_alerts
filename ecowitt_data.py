@@ -92,7 +92,7 @@ from ecowitt_const import (
 
 DEFAULT_UNIQUE_ID = "default"
 
-KEYS_TO_IGNORE = ["dateutc", "freq", "model", "stationtype"]
+KEYS_TO_IGNORE = ["freq", "model", "stationtype"]
 
 
 def in_to_mm(value: float) -> float:
