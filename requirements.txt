@@ -2,3 +2,4 @@ paho-mqtt
 awsiotsdk
 aiohttp
 meteocalc
+boto3

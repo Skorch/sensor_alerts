@@ -43,23 +43,10 @@ async def send_message(mqtt_target, mqtt_topic, values):
 
     message = {"message" : values}
     # await asyncio.wrap_future(mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE))
-    publish_future =  mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE)
+    publish_future = mqtt_target.publish(topic=mqtt_topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE)
     result = publish_future[0].result()
     logger.debug(f"{result}")
     logger.debug("Update request published.")
-
-def map_soil_sensor(key, data):
-    match = re.match('^soil(?P<metric>[A-Za-z]+)(?P<sensor_number>\d+)$', key)
-    sensor_number = f"soil{match.group('sensor_number')}"
-    sensor = soil_sensors.get(sensor_number, {})
-    sensor[match.group('metric')] = data[key]
-    sensor["ts"] = sensor_ts
-    sensor["type"] = "soil_moisture"
-    sensor["system_id"] = f"soil_{passkey}"
-
-    yield sensor_event
-    yield battery_event
-
 
 def event_template(sensor_type, sensor_id, system_id, sensor_ts, metric_name, metric_value): 
     return {

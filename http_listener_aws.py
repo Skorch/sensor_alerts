@@ -8,16 +8,13 @@ import asyncio
 from io import open
 import json
 
-import http_aws_iot_shadow_processor as iot_processor
-import http_aws_mqtt_processor as mqtt_processor
+import http_aws_kinesis_processor as mqtt_processor
 
 from config import *
 
 from ecowitt_data import DataProcessor
 
 from aiohttp import web
-from awscrt import io, mqtt, auth, http
-from awsiot import mqtt_connection_builder, iotshadow
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__file__)
@@ -46,7 +43,7 @@ async def async_publish_payload(request: web.Request):
     logger.debug(f"passkey: {passkey}")
 
     # await iot_processor.process_data(mqtt_connection, data, passkey)
-    await mqtt_processor.process_data(mqtt_connection, data, passkey)
+    mqtt_processor.process_data(data, passkey)
 
 
 def main():
@@ -77,29 +74,6 @@ def main():
 
 if __name__ == '__main__':
 
-    # Spin up resources
-    event_loop_group = io.EventLoopGroup(1)
-    host_resolver = io.DefaultHostResolver(event_loop_group)
-    client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
-    mqtt_connection = mqtt_connection_builder.mtls_from_path(
-            endpoint=MQTT_HOST,
-            cert_filepath=AWS_CERT_PATH,
-            pri_key_filepath=AWS_KEY_PATH,
-            client_bootstrap=client_bootstrap,
-            ca_filepath=AWS_ROOT_CA,
-            on_connection_interrupted=on_connection_interrupted,
-            on_connection_resumed=on_connection_resumed,
-            client_id=AWS_CLIENT_ID,
-            clean_session=False,
-            keep_alive_secs=6)
-
-    logger.info(f"Connecting to {MQTT_HOST} with client ID '{AWS_CLIENT_ID}'...")
-
-    connect_future = mqtt_connection.connect()
-
-    # Future.result() waits until a result is available
-    connect_future.result()
-    logger.info("Connected!")
 
 
 
